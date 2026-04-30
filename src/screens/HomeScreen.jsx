@@ -1,20 +1,25 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  View,
-  Text,
   FlatList,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import FilterCategorie from "../components/FilterCategorie";
+import ProductCard from "../components/ProductCard";
 import { COLORS } from "../constants/colors";
 import { PRODUCTS_DATA } from "../data/products";
-import ProductCard from "../components/ProductCard";
 
 const CATEGORIES = ["Masculino", "Feminino", "Acessórios"];
 
-export default function HomeScreen({ onNavigateToDetail, onNavigateToCart, cartCount }) {
+export default function HomeScreen({
+  onNavigateToDetail,
+  onNavigateToCart,
+  cartCount,
+}) {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const filteredProducts = activeCategory
@@ -30,7 +35,10 @@ export default function HomeScreen({ onNavigateToDetail, onNavigateToCart, cartC
           <Text style={styles.brand}>MORIZA</Text>
           <Text style={styles.subtitle}>Ascurra · SC</Text>
         </View>
-        <TouchableOpacity  style={styles.cartIconWrapper} onPress={onNavigateToCart}>
+        <TouchableOpacity
+          style={styles.cartIconWrapper}
+          onPress={onNavigateToCart}
+        >
           <Text style={styles.cartIcon}>🛍️</Text>
           {cartCount > 0 && (
             <View style={styles.cartBadge}>
@@ -42,25 +50,49 @@ export default function HomeScreen({ onNavigateToDetail, onNavigateToCart, cartC
 
       <View style={styles.filterContainer}>
         <TouchableOpacity
-          style={[styles.filterBtn, activeCategory === null && styles.filterBtnActive]}
+          style={[
+            styles.filterBtn,
+            activeCategory === null && styles.filterBtnActive,
+          ]}
           onPress={() => setActiveCategory(null)}
         >
-          <Text style={[styles.filterBtnText, activeCategory === null && styles.filterBtnTextActive]}>
+          <Text
+            style={[
+              styles.filterBtnText,
+              activeCategory === null && styles.filterBtnTextActive,
+            ]}
+          >
             Todos
           </Text>
         </TouchableOpacity>
 
         {CATEGORIES.map((cat) => (
+          <FilterCategorie
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+            key={cat}
+          />
+        ))}
+
+        {/* {CATEGORIES.map((cat) => (
           <TouchableOpacity
             key={cat}
-            style={[styles.filterBtn, activeCategory === cat && styles.filterBtnActive]}
+            style={[
+              styles.filterBtn,
+              activeCategory === cat && styles.filterBtnActive,
+            ]}
             onPress={() => setActiveCategory(cat)}
           >
-            <Text style={[styles.filterBtnText, activeCategory === cat && styles.filterBtnTextActive]}>
+            <Text
+              style={[
+                styles.filterBtnText,
+                activeCategory === cat && styles.filterBtnTextActive,
+              ]}
+            >
               {cat}
             </Text>
           </TouchableOpacity>
-        ))}
+        ))} */}
       </View>
 
       <FlatList
