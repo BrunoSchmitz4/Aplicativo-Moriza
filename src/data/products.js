@@ -21,6 +21,7 @@ export const PRODUCTS_DATA = [
     image:
       "https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?auto=format&fit=crop&q=80&w=500",
   },
+
   {
     id: "3",
     name: "Jaqueta de Couro Black",
