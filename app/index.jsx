@@ -1,10 +1,18 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, SafeAreaView, StatusBar, StyleSheet, } from "react-native";
 import { useRouter } from "expo-router";
-import { COLORS } from "../src/constants/colors";
-import { PRODUCTS_DATA } from "../src/data/products";
-import { useCart } from "../src/context/CartContext";
+import { useState } from "react";
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import ProductCard from "../src/components/ProductCard";
+import { COLORS } from "../src/constants/colors";
+import { useCart } from "../src/context/CartContext";
+import { PRODUCTS_DATA } from "../src/data/products";
 
 const CATEGORIES = ["Masculino", "Feminino", "Acessórios"];
 
@@ -24,7 +32,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.brand}>MORIZA</Text>
-          <Text style={styles.subtitle}>Ascurra · SC</Text>
+          <Text style={styles.subtitle}>Apiúna · SC</Text>
         </View>
         <TouchableOpacity
           style={styles.cartIconWrapper}
@@ -41,10 +49,18 @@ export default function HomeScreen() {
 
       <View style={styles.filterContainer}>
         <TouchableOpacity
-          style={[styles.filterBtn, activeCategory === null && styles.filterBtnActive]}
+          style={[
+            styles.filterBtn,
+            activeCategory === null && styles.filterBtnActive,
+          ]}
           onPress={() => setActiveCategory(null)}
         >
-          <Text style={[styles.filterBtnText, activeCategory === null && styles.filterBtnTextActive]}>
+          <Text
+            style={[
+              styles.filterBtnText,
+              activeCategory === null && styles.filterBtnTextActive,
+            ]}
+          >
             Todos
           </Text>
         </TouchableOpacity>
@@ -52,10 +68,18 @@ export default function HomeScreen() {
         {CATEGORIES.map((cat) => (
           <TouchableOpacity
             key={cat}
-            style={[styles.filterBtn, activeCategory === cat && styles.filterBtnActive]}
+            style={[
+              styles.filterBtn,
+              activeCategory === cat && styles.filterBtnActive,
+            ]}
             onPress={() => setActiveCategory(cat)}
           >
-            <Text style={[styles.filterBtnText, activeCategory === cat && styles.filterBtnTextActive]}>
+            <Text
+              style={[
+                styles.filterBtnText,
+                activeCategory === cat && styles.filterBtnTextActive,
+              ]}
+            >
               {cat}
             </Text>
           </TouchableOpacity>
