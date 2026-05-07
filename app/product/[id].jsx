@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  View,
-  Text,
+  Alert,
   Image,
-  ScrollView,
-  TouchableOpacity,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
-  Alert,
+  Text,
+  View,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import BackButton from "../../src/components/BackButton";
+import PrimaryButton from "../../src/components/PrimaryButton";
+import ScreenHeader from "../../src/components/ScreenHeader";
+import SizeSelector from "../../src/components/SizeSelector";
 import { COLORS } from "../../src/constants/colors";
+import { useCart } from "../../src/context/CartContext";
 import { PRODUCTS_DATA } from "../../src/data/products";
 import { formatPrice } from "../../src/utils/format";
-import { useCart } from "../../src/context/CartContext";
 
 export default function DetailScreen() {
   const router = useRouter();
@@ -34,27 +37,34 @@ export default function DetailScreen() {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      Alert.alert("Atenção", "Por favor, selecione um tamanho antes de continuar.");
+      Alert.alert(
+        "Atenção",
+        "Por favor, selecione um tamanho antes de continuar.",
+      );
       return;
     }
     addToCart(product, selectedSize);
-    Alert.alert("✅ Adicionado!", `${product.name} (${selectedSize}) foi adicionado ao carrinho.`);
+    Alert.alert(
+      "✅ Adicionado!",
+      `${product.name} (${selectedSize}) foi adicionado ao carrinho.`,
+    );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.blue} />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>← Voltar</Text>
-        </TouchableOpacity>
-        <Text style={styles.brand}>MORIZA</Text>
-        <View style={{ width: 70 }} />
-      </View>
+      <ScreenHeader
+        left={<BackButton onPress={() => router.back()} />}
+        title="MORIZA"
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image source={{ uri: product.image }} style={styles.image} resizeMode="cover" />
+        <Image
+          source={{ uri: product.image }}
+          style={styles.image}
+          resizeMode="cover"
+        />
 
         <View style={styles.body}>
           <Text style={styles.category}>{product.category}</Text>
@@ -65,23 +75,17 @@ export default function DetailScreen() {
           <Text style={styles.description}>{product.description}</Text>
 
           <Text style={styles.sectionLabel}>Tamanho</Text>
-          <View style={styles.sizesRow}>
-            {product.sizes.map((size) => (
-              <TouchableOpacity
-                key={size}
-                style={[styles.sizeBtn, selectedSize === size && styles.sizeBtnActive]}
-                onPress={() => setSelectedSize(size)}
-              >
-                <Text style={[styles.sizeBtnText, selectedSize === size && styles.sizeBtnTextActive]}>
-                  {size}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <SizeSelector
+            sizes={product.sizes}
+            selected={selectedSize}
+            onSelect={setSelectedSize}
+          />
 
-          <TouchableOpacity style={styles.addToCartBtn} onPress={handleAddToCart} activeOpacity={0.8}>
-            <Text style={styles.addToCartText}>🛒  Adicionar ao Carrinho</Text>
-          </TouchableOpacity>
+          <PrimaryButton
+            label="🛒  Adicionar ao Carrinho"
+            variant="orange"
+            onPress={handleAddToCart}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -92,30 +96,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.white,
-  },
-  header: {
-    backgroundColor: COLORS.blue,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  brand: {
-    color: COLORS.white,
-    fontSize: 22,
-    fontWeight: "900",
-    letterSpacing: 4,
-  },
-  backBtn: {
-    paddingVertical: 6,
-    paddingRight: 12,
-    width: 70,
-  },
-  backBtnText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: "600",
   },
   image: {
     width: "100%",
@@ -159,50 +139,5 @@ const styles = StyleSheet.create({
     color: "#444",
     lineHeight: 24,
     marginBottom: 24,
-  },
-  sizesRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 28,
-  },
-  sizeBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#DDD",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.white,
-  },
-  sizeBtnActive: {
-    borderColor: COLORS.orange,
-    backgroundColor: COLORS.orange,
-  },
-  sizeBtnText: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: COLORS.black,
-  },
-  sizeBtnTextActive: {
-    color: COLORS.white,
-  },
-  addToCartBtn: {
-    backgroundColor: COLORS.orange,
-    paddingVertical: 18,
-    borderRadius: 14,
-    alignItems: "center",
-    shadowColor: COLORS.orange,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  addToCartText: {
-    color: COLORS.white,
-    fontSize: 17,
-    fontWeight: "800",
-    letterSpacing: 0.5,
   },
 });

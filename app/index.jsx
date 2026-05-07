@@ -1,10 +1,20 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, SafeAreaView, StatusBar, StyleSheet, } from "react-native";
 import { useRouter } from "expo-router";
-import { COLORS } from "../src/constants/colors";
-import { PRODUCTS_DATA } from "../src/data/products";
-import { useCart } from "../src/context/CartContext";
+import React, { useState } from "react";
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import CartIconButton from "../src/components/CartIconButton";
+import CategoryFilter from "../src/components/CategoryFilter";
 import ProductCard from "../src/components/ProductCard";
+import ScreenHeader from "../src/components/ScreenHeader";
+import { COLORS } from "../src/constants/colors";
+import { useCart } from "../src/context/CartContext";
+import { PRODUCTS_DATA } from "../src/data/products";
 
 const CATEGORIES = ["Masculino", "Feminino", "Acessórios"];
 
@@ -21,46 +31,26 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.blue} />
 
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.brand}>MORIZA</Text>
-          <Text style={styles.subtitle}>Ascurra · SC</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.cartIconWrapper}
-          onPress={() => router.push("/cart")}
-        >
-          <Text style={styles.cartIcon}>🛍️</Text>
-          {cartCount > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{cartCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader
+        left={
+          <View>
+            <Text style={styles.brand}>MORIZA</Text>
+            <Text style={styles.subtitle}>Ascurra · SC</Text>
+          </View>
+        }
+        right={
+          <CartIconButton
+            count={cartCount}
+            onPress={() => router.push("/cart")}
+          />
+        }
+      />
 
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[styles.filterBtn, activeCategory === null && styles.filterBtnActive]}
-          onPress={() => setActiveCategory(null)}
-        >
-          <Text style={[styles.filterBtnText, activeCategory === null && styles.filterBtnTextActive]}>
-            Todos
-          </Text>
-        </TouchableOpacity>
-
-        {CATEGORIES.map((cat) => (
-          <TouchableOpacity
-            key={cat}
-            style={[styles.filterBtn, activeCategory === cat && styles.filterBtnActive]}
-            onPress={() => setActiveCategory(cat)}
-          >
-            <Text style={[styles.filterBtnText, activeCategory === cat && styles.filterBtnTextActive]}>
-              {cat}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <CategoryFilter
+        categories={CATEGORIES}
+        active={activeCategory}
+        onChange={setActiveCategory}
+      />
 
       <FlatList
         data={filteredProducts}
@@ -85,14 +75,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  header: {
-    backgroundColor: COLORS.blue,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   brand: {
     color: COLORS.white,
     fontSize: 22,
@@ -104,59 +86,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1,
     marginTop: 2,
-  },
-  cartIconWrapper: {
-    padding: 4,
-    position: "relative",
-  },
-  cartIcon: {
-    fontSize: 24,
-  },
-  cartBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    backgroundColor: COLORS.orange,
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 4,
-  },
-  cartBadgeText: {
-    color: COLORS.white,
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-  filterContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray,
-    gap: 8,
-  },
-  filterBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: COLORS.grayText,
-    backgroundColor: COLORS.white,
-  },
-  filterBtnActive: {
-    backgroundColor: COLORS.blue,
-    borderColor: COLORS.blue,
-  },
-  filterBtnText: {
-    fontSize: 13,
-    color: COLORS.grayText,
-    fontWeight: "600",
-  },
-  filterBtnTextActive: {
-    color: COLORS.white,
   },
   listContent: {
     padding: 12,

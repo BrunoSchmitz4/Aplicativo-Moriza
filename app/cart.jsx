@@ -1,19 +1,20 @@
-import React from "react";
+import { useRouter } from "expo-router";
 import {
-  View,
-  Text,
-  Image,
+  Alert,
   FlatList,
-  TouchableOpacity,
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Alert,
+  Text,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import BackButton from "../src/components/BackButton";
+import CartItem from "../src/components/CartItem";
+import PrimaryButton from "../src/components/PrimaryButton";
+import ScreenHeader from "../src/components/ScreenHeader";
 import { COLORS } from "../src/constants/colors";
-import { formatPrice } from "../src/utils/format";
 import { useCart } from "../src/context/CartContext";
+import { formatPrice } from "../src/utils/format";
 
 export default function CartScreen() {
   const router = useRouter();
@@ -21,79 +22,48 @@ export default function CartScreen() {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
-    Alert.alert(
-      "🎉 Pedido Realizado!",
-      "Obrigado pela sua compra na Moriza!",
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            clearCart();
-            router.back();
-          },
+    Alert.alert("🎉 Pedido Realizado!", "Obrigado pela sua compra na Moriza!", [
+      {
+        text: "OK",
+        onPress: () => {
+          clearCart();
+          router.back();
         },
-      ]
-    );
+      },
+    ]);
   };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.cartItem}>
-      <Image source={{ uri: item.image }} style={styles.itemImage} resizeMode="cover" />
-
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-        <Text style={styles.itemSize}>Tam: {item.selectedSize}</Text>
-        <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
-
-        <View style={styles.qtyRow}>
-          <TouchableOpacity
-            style={styles.qtyBtn}
-            onPress={() => updateQuantity(item.cartKey, item.quantity - 1)}
-          >
-            <Text style={styles.qtyBtnText}>−</Text>
-          </TouchableOpacity>
-          <Text style={styles.qtyValue}>{item.quantity}</Text>
-          <TouchableOpacity
-            style={styles.qtyBtn}
-            onPress={() => updateQuantity(item.cartKey, item.quantity + 1)}
-          >
-            <Text style={styles.qtyBtnText}>+</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.removeBtn} onPress={() => removeItem(item.cartKey)}>
-        <Text style={styles.removeBtnText}>✕</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.blue} />
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>← Voltar</Text>
-        </TouchableOpacity>
-        <Text style={styles.brand}>Carrinho</Text>
-        <View style={{ width: 70 }} />
-      </View>
+      <ScreenHeader
+        left={<BackButton onPress={() => router.back()} />}
+        title="Carrinho"
+      />
 
       {cart.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyIcon}>🛍️</Text>
           <Text style={styles.emptyText}>Seu carrinho está vazio.</Text>
-          <TouchableOpacity style={styles.checkoutBtn} onPress={() => router.back()}>
-            <Text style={styles.checkoutBtnText}>Explorar Produtos</Text>
-          </TouchableOpacity>
+          <PrimaryButton
+            label="Explorar Produtos"
+            onPress={() => router.back()}
+            style={styles.emptyButton}
+          />
         </View>
       ) : (
         <>
           <FlatList
             data={cart}
             keyExtractor={(item) => item.cartKey}
-            renderItem={renderItem}
+            renderItem={({ item }) => (
+              <CartItem
+                item={item}
+                onChangeQuantity={updateQuantity}
+                onRemove={removeItem}
+              />
+            )}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
@@ -103,9 +73,7 @@ export default function CartScreen() {
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalValue}>{formatPrice(total)}</Text>
             </View>
-            <TouchableOpacity style={styles.checkoutBtn} onPress={handleCheckout} activeOpacity={0.8}>
-              <Text style={styles.checkoutBtnText}>Finalizar Compra</Text>
-            </TouchableOpacity>
+            <PrimaryButton label="Finalizar Compra" onPress={handleCheckout} />
           </View>
         </>
       )}
@@ -118,106 +86,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  header: {
-    backgroundColor: COLORS.blue,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  brand: {
-    color: COLORS.white,
-    fontSize: 22,
-    fontWeight: "900",
-    letterSpacing: 4,
-  },
-  backBtn: {
-    paddingVertical: 6,
-    paddingRight: 12,
-    width: 70,
-  },
-  backBtnText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: "600",
-  },
   listContent: {
     padding: 16,
     paddingBottom: 160,
-  },
-  cartItem: {
-    flexDirection: "row",
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    marginBottom: 14,
-    padding: 12,
-    alignItems: "center",
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  itemImage: {
-    width: 80,
-    height: 90,
-    borderRadius: 8,
-    marginRight: 14,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.black,
-    marginBottom: 3,
-  },
-  itemSize: {
-    fontSize: 12,
-    color: COLORS.grayText,
-    marginBottom: 4,
-  },
-  itemPrice: {
-    fontSize: 15,
-    fontWeight: "800",
-    color: COLORS.blue,
-    marginBottom: 10,
-  },
-  qtyRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  qtyBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
-    backgroundColor: COLORS.gray,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  qtyBtnText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.black,
-  },
-  qtyValue: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: COLORS.black,
-    minWidth: 20,
-    textAlign: "center",
-  },
-  removeBtn: {
-    padding: 8,
-    marginLeft: 6,
-  },
-  removeBtnText: {
-    fontSize: 16,
-    color: COLORS.grayText,
-    fontWeight: "700",
   },
   footer: {
     position: "absolute",
@@ -251,23 +122,6 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: COLORS.black,
   },
-  checkoutBtn: {
-    backgroundColor: COLORS.blue,
-    paddingVertical: 18,
-    borderRadius: 14,
-    alignItems: "center",
-    shadowColor: COLORS.blue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  checkoutBtnText: {
-    color: COLORS.white,
-    fontSize: 17,
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
   emptyState: {
     flex: 1,
     alignItems: "center",
@@ -283,5 +137,8 @@ const styles = StyleSheet.create({
     color: COLORS.grayText,
     fontWeight: "500",
     marginBottom: 8,
+  },
+  emptyButton: {
+    alignSelf: "stretch",
   },
 });
