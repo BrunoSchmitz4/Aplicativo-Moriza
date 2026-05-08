@@ -35,7 +35,7 @@ export default function HomeScreen() {
         left={
           <View>
             <Text style={styles.brand}>MORIZA</Text>
-            <Text style={styles.subtitle}>Ascurra · SC</Text>
+            <Text style={styles.subtitle}>Apiúna · SC</Text>
           </View>
         }
         right={

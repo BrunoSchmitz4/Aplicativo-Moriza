@@ -22,7 +22,7 @@ export default function CartScreen() {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
-    Alert.alert("🎉 Pedido Realizado!", "Obrigado pela sua compra na Moriza!", [
+    Alert.alert("Pedido Realizado!", "Obrigado pela sua compra na Moriza!", [
       {
         text: "OK",
         onPress: () => {
