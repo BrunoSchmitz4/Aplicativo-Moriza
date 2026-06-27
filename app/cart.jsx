@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import {
-  Alert,
   FlatList,
   SafeAreaView,
   StatusBar,
@@ -18,20 +17,10 @@ import { formatPrice } from "../src/utils/format";
 
 export default function CartScreen() {
   const router = useRouter();
-  const { cart, updateQuantity, removeItem, clearCart } = useCart();
+  const { cart, updateQuantity, removeItem } = useCart();
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleCheckout = () => {
-    Alert.alert("Pedido Realizado!", "Obrigado pela sua compra na Moriza!", [
-      {
-        text: "OK",
-        onPress: () => {
-          clearCart();
-          router.back();
-        },
-      },
-    ]);
-  };
+  const handleCheckout = () => router.push("/checkout");
 
   return (
     <SafeAreaView style={styles.safeArea}>
