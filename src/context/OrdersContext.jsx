@@ -1,3 +1,6 @@
+// Versão NATIVA (Android/iOS): persiste os pedidos em um banco SQLite.
+// Na Web, o Metro usa OrdersContext.web.jsx (AsyncStorage), pois o
+// expo-sqlite não roda no navegador sem configuração extra de WASM.
 import * as SQLite from "expo-sqlite";
 import React, {
   createContext,
