@@ -8,17 +8,18 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import BackButton from "../src/components/BackButton";
+import Field from "../src/components/Field";
+import OrderSummary from "../src/components/OrderSummary";
+import PaymentSelector from "../src/components/PaymentSelector";
 import PrimaryButton from "../src/components/PrimaryButton";
 import ScreenHeader from "../src/components/ScreenHeader";
 import { COLORS } from "../src/constants/colors";
 import { useCart } from "../src/context/CartContext";
 import { useOrders } from "../src/context/OrdersContext";
-import { formatPrice } from "../src/utils/format";
 
 const PAYMENT_METHODS = ["Cartão de Crédito", "Pix", "Boleto"];
 
@@ -110,25 +111,12 @@ export default function CheckoutScreen() {
             <SummaryRow label="Previsão" value="3 a 7 dias úteis" />
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Itens</Text>
-            {order.items.map((item) => (
-              <View key={item.cartKey} style={styles.itemRow}>
-                <Text style={styles.itemName} numberOfLines={1}>
-                  {item.quantity}x {item.name}{" "}
-                  <Text style={styles.itemSize}>({item.selectedSize})</Text>
-                </Text>
-                <Text style={styles.itemPrice}>
-                  {formatPrice(item.price * item.quantity)}
-                </Text>
-              </View>
-            ))}
-            <View style={styles.divider} />
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total pago</Text>
-              <Text style={styles.totalValue}>{formatPrice(order.total)}</Text>
-            </View>
-          </View>
+          <OrderSummary
+            title="Itens"
+            items={order.items}
+            total={order.total}
+            totalLabel="Total pago"
+          />
 
           <PrimaryButton
             label="Voltar à Loja"
@@ -188,48 +176,14 @@ export default function CheckoutScreen() {
           </View>
 
           <Text style={styles.sectionLabel}>Forma de pagamento</Text>
-          <View style={styles.paymentRow}>
-            {PAYMENT_METHODS.map((method) => {
-              const active = payment === method;
-              return (
-                <TouchableOpacity
-                  key={method}
-                  style={[styles.payChip, active && styles.payChipActive]}
-                  onPress={() => setPayment(method)}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.payChipText,
-                      active && styles.payChipTextActive,
-                    ]}
-                  >
-                    {method}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <PaymentSelector
+            methods={PAYMENT_METHODS}
+            selected={payment}
+            onSelect={setPayment}
+          />
 
           <Text style={styles.sectionLabel}>Resumo</Text>
-          <View style={styles.card}>
-            {cart.map((item) => (
-              <View key={item.cartKey} style={styles.itemRow}>
-                <Text style={styles.itemName} numberOfLines={1}>
-                  {item.quantity}x {item.name}{" "}
-                  <Text style={styles.itemSize}>({item.selectedSize})</Text>
-                </Text>
-                <Text style={styles.itemPrice}>
-                  {formatPrice(item.price * item.quantity)}
-                </Text>
-              </View>
-            ))}
-            <View style={styles.divider} />
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>{formatPrice(total)}</Text>
-            </View>
-          </View>
+          <OrderSummary items={cart} total={total} />
 
           <PrimaryButton
             label="Confirmar Pedido"
@@ -247,19 +201,6 @@ function SafeAreaCheckout({ children }) {
     <View style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.blue} />
       {children}
-    </View>
-  );
-}
-
-function Field({ label, ...props }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={COLORS.grayText}
-        {...props}
-      />
     </View>
   );
 }
@@ -297,67 +238,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 8,
   },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: COLORS.black,
-    marginBottom: 12,
-  },
-
-  field: { marginBottom: 14 },
-  fieldLabel: {
-    fontSize: 13,
-    color: COLORS.grayText,
-    fontWeight: "600",
-    marginBottom: 6,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.gray,
-    backgroundColor: COLORS.gray,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: COLORS.black,
-  },
-
-  paymentRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  payChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: COLORS.grayText,
-    backgroundColor: COLORS.white,
-  },
-  payChipActive: { backgroundColor: COLORS.blue, borderColor: COLORS.blue },
-  payChipText: { fontSize: 13, color: COLORS.grayText, fontWeight: "600" },
-  payChipTextActive: { color: COLORS.white },
-
-  itemRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-    gap: 12,
-  },
-  itemName: { flex: 1, fontSize: 14, color: COLORS.black, fontWeight: "500" },
-  itemSize: { color: COLORS.grayText, fontWeight: "400" },
-  itemPrice: { fontSize: 14, fontWeight: "700", color: COLORS.black },
-
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.gray,
-    marginVertical: 10,
-  },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  totalLabel: { fontSize: 16, color: COLORS.grayText, fontWeight: "600" },
-  totalValue: { fontSize: 24, fontWeight: "900", color: COLORS.black },
+  divider: { height: 1, backgroundColor: COLORS.gray, marginVertical: 10 },
 
   summaryRow: {
     flexDirection: "row",

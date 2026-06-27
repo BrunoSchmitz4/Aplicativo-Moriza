@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import BackButton from "../src/components/BackButton";
+import OrderItemRow from "../src/components/OrderItemRow";
 import PrimaryButton from "../src/components/PrimaryButton";
 import ScreenHeader from "../src/components/ScreenHeader";
 import { COLORS } from "../src/constants/colors";
@@ -42,15 +43,7 @@ function OrderCard({ order }) {
       <View style={styles.divider} />
 
       {order.items.map((item) => (
-        <View key={item.cartKey} style={styles.itemRow}>
-          <Text style={styles.itemName} numberOfLines={1}>
-            {item.quantity}x {item.name}{" "}
-            <Text style={styles.itemSize}>({item.selectedSize})</Text>
-          </Text>
-          <Text style={styles.itemPrice}>
-            {formatPrice(item.price * item.quantity)}
-          </Text>
-        </View>
+        <OrderItemRow key={item.cartKey} item={item} />
       ))}
 
       <View style={styles.divider} />
@@ -134,17 +127,6 @@ const styles = StyleSheet.create({
   date: { fontSize: 13, color: COLORS.grayText, marginTop: 4 },
 
   divider: { height: 1, backgroundColor: COLORS.gray, marginVertical: 12 },
-
-  itemRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-    gap: 12,
-  },
-  itemName: { flex: 1, fontSize: 14, color: COLORS.black, fontWeight: "500" },
-  itemSize: { color: COLORS.grayText, fontWeight: "400" },
-  itemPrice: { fontSize: 14, fontWeight: "700", color: COLORS.black },
 
   metaRow: {
     flexDirection: "row",
