@@ -17,6 +17,7 @@ import PrimaryButton from "../src/components/PrimaryButton";
 import ScreenHeader from "../src/components/ScreenHeader";
 import { COLORS } from "../src/constants/colors";
 import { useCart } from "../src/context/CartContext";
+import { useOrders } from "../src/context/OrdersContext";
 import { formatPrice } from "../src/utils/format";
 
 const PAYMENT_METHODS = ["Cartão de Crédito", "Pix", "Boleto"];
@@ -28,6 +29,7 @@ function generateOrderNumber() {
 export default function CheckoutScreen() {
   const router = useRouter();
   const { cart, clearCart } = useCart();
+  const { addOrder } = useOrders();
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -46,15 +48,19 @@ export default function CheckoutScreen() {
       return;
     }
 
-    // Guarda um resumo do pedido antes de limpar o carrinho
-    setOrder({
+    // Monta o pedido, registra no histórico e limpa o carrinho
+    const newOrder = {
       number: generateOrderNumber(),
+      createdAt: new Date().toISOString(),
+      status: "Confirmado",
       items: cart,
       total,
       name: name.trim(),
       address: `${address.trim()}, ${city.trim()}`,
       payment,
-    });
+    };
+    setOrder(newOrder);
+    addOrder(newOrder);
     clearCart();
   };
 
@@ -128,6 +134,16 @@ export default function CheckoutScreen() {
             label="Voltar à Loja"
             onPress={() => router.dismissAll()}
           />
+          <TouchableOpacity
+            style={styles.linkBtn}
+            onPress={() => {
+              router.dismissAll();
+              router.push("/orders");
+            }}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.linkText}>Ver meus pedidos →</Text>
+          </TouchableOpacity>
         </ScrollView>
       </SafeAreaCheckout>
     );
@@ -394,4 +410,7 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 64 },
   emptyText: { fontSize: 17, color: COLORS.grayText, fontWeight: "500" },
   stretch: { alignSelf: "stretch" },
+
+  linkBtn: { alignSelf: "center", paddingVertical: 8 },
+  linkText: { color: COLORS.blue, fontSize: 15, fontWeight: "700" },
 });

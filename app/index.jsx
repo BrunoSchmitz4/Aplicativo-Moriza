@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import CartIconButton from "../src/components/CartIconButton";
 import CategoryFilter from "../src/components/CategoryFilter";
+import OrdersIconButton from "../src/components/OrdersIconButton";
 import ProductCard from "../src/components/ProductCard";
 import ScreenHeader from "../src/components/ScreenHeader";
 import { COLORS } from "../src/constants/colors";
 import { useCart } from "../src/context/CartContext";
+import { useOrders } from "../src/context/OrdersContext";
 import { PRODUCTS_DATA } from "../src/data/products";
 
 const CATEGORIES = ["Masculino", "Feminino", "Acessórios"];
@@ -21,6 +23,7 @@ const CATEGORIES = ["Masculino", "Feminino", "Acessórios"];
 export default function HomeScreen() {
   const router = useRouter();
   const { cartCount } = useCart();
+  const { ordersCount } = useOrders();
   const [activeCategory, setActiveCategory] = useState(null);
 
   const filteredProducts = activeCategory
@@ -39,10 +42,16 @@ export default function HomeScreen() {
           </View>
         }
         right={
-          <CartIconButton
-            count={cartCount}
-            onPress={() => router.push("/cart")}
-          />
+          <View style={styles.headerActions}>
+            <OrdersIconButton
+              count={ordersCount}
+              onPress={() => router.push("/orders")}
+            />
+            <CartIconButton
+              count={cartCount}
+              onPress={() => router.push("/cart")}
+            />
+          </View>
         }
       />
 
@@ -86,6 +95,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1,
     marginTop: 2,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   listContent: {
     padding: 12,
